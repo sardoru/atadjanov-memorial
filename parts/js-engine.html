@@ -1,0 +1,45 @@
+// ===== THEME =====
+const themeBtn=document.getElementById('themeToggle');
+const stored_theme=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+document.documentElement.setAttribute('data-theme',stored_theme);
+themeBtn.textContent=stored_theme==='dark'?'🌙':'☀️';
+themeBtn.addEventListener('click',()=>{
+const curr=document.documentElement.getAttribute('data-theme');
+const next=curr==='dark'?'light':'dark';
+document.documentElement.setAttribute('data-theme',next);
+localStorage.setItem('theme',next);
+themeBtn.textContent=next==='dark'?'🌙':'☀️';
+});
+
+// ===== LANGUAGE =====
+function setLang(lang){
+document.documentElement.setAttribute('data-lang',lang);
+localStorage.setItem('lang',lang);
+document.querySelectorAll('.lang-btn').forEach(b=>{b.classList.toggle('active',b.dataset.lang===lang)});
+const t=T[lang]||T.en;
+document.querySelectorAll('[data-i18n]').forEach(el=>{
+const key=el.dataset.i18n;
+if(t[key]!==undefined){
+if(el.children.length===0||el.closest('.infobox')){el.innerHTML=t[key]}
+else{
+// For elements with children, only set text of text nodes or use innerHTML if safe
+el.innerHTML=t[key];
+}
+}
+});
+document.documentElement.lang=lang==='uz'?'uz':lang==='ru'?'ru':lang==='fr'?'fr':lang==='es'?'es':'en';
+}
+document.querySelectorAll('.lang-btn').forEach(b=>{b.addEventListener('click',()=>setLang(b.dataset.lang))});
+const stored_lang=localStorage.getItem('lang')||'en';
+if(stored_lang!=='en')setLang(stored_lang);
+
+// ===== SCROLL ANIMATIONS =====
+const sections=document.querySelectorAll('.section');
+const observer=new IntersectionObserver((entries)=>{
+entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}});
+},{threshold:0.1});
+sections.forEach(s=>observer.observe(s));
+// Fallback
+setTimeout(()=>{sections.forEach(s=>s.classList.add('visible'))},1500);
+</script>
+</body>
